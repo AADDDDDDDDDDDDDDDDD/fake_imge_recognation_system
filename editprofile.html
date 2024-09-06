@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FA-CHECK</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <style>
+      .card {
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px,
+          rgba(0, 0, 0, 0.22) 0px 10px 10px;
+      }
+      .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+      }
+      input[type="file"] {
+      color: #fff !important; /* Set text color to white */
+    }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body style="background-color: black">
+    <nav class="navbar navbar-expand-lg bgc text-white">
+      <div class="container-fluid">
+        <a class="navbar-brand text-white" href="./index.html">Face Swap Detection System</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item text-white">
+              <a
+                href="./index.html"
+                class="nav-link text-white "
+                aria-current="page"
+                href="#"
+                >Home</a
+              >
+            </li>
+            <li class="nav-item text-white">
+              <a
+                href="./imageCheck.html"
+                class="nav-link text-white"
+                aria-current="page"
+                href="#"
+                >Scan Image</a
+              >
+            </li>
+
+            <li class="nav-item">
+              <a href="./contact.html" class="nav-link text-white" href="#"
+                >Contact US</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="./editprofile.html" class="nav-link text-white active" href="#"
+                >Edit Profile</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="./log.html" class="nav-link text-white" href="#" id="logout"
+                >Log Out</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="row justify-content-center mt-5 pt-5">
+        <div class="col-md-6 my-2">
+          <div class="card p-4">
+            <h2 class="text-center mb-4">Update Profile</h2>
+            <form id="update-profile-form">
+              <div class="mb-3">
+                <label for="current-username" class="form-label"
+                  >Current Username</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="current-username"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="current-password" class="form-label"
+                  >Current Password</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="current-password"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="new-username" class="form-label">New Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="new-username"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Update Profile</button>
+              <div class="mt-3">
+                <a href="./log.html">Back to Login</a>
+              </div>
+            </form>
+          </div>
+        </div>
+       
+      </div>
+    
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Izitoast JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+      document
+        .getElementById("update-profile-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const currentUsername =
+            document.getElementById("current-username").value;
+          const currentPassword =
+            document.getElementById("current-password").value;
+          const newUsername = document.getElementById("new-username").value;
+
+          try {
+            const requestData = {
+              current_username: currentUsername,
+              current_password: currentPassword,
+              new_username: newUsername,
+            };
+
+            const response = await fetch(
+              "http://localhost:8806/update-profile",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestData),
+              }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+              iziToast.success({
+                title: "Profile Updated",
+                message: "Username updated successfully!",
+              });
+            } else {
+              iziToast.error({
+                title: "Update Failed",
+                message: data.detail || "Failed to update profile.",
+              });
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            iziToast.error({
+              title: "Error",
+              message: "An error occurred. Please try again later.",
+            });
+          }
+        });
+    </script>
+  </body>
+</html>
