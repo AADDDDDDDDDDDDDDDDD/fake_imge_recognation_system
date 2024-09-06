@@ -1,0 +1,212 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FA-CHECK</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <style>
+      .card {
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px,
+          rgba(0, 0, 0, 0.22) 0px 10px 10px;
+      }
+      .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+      }
+      input[type="file"] {
+      color: #fff !important; 
+    }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <nav class="navbar navbar-expand-lg bgc text-white">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="./index.html">Face Swap Detection System</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+     
+    </div>
+  </nav>
+<body style="background-color: #000">
+    <div class="container-fluid bgb" id="particles-js">
+        <div class="row mb-2 pt-5 justify-content-center">
+            <h3 class="text-center text-white my-4">Sign Up</h3>
+            <div class="col-md-6">
+                <div class="card p-2">
+                    <form id="signup-form">
+                        <input
+                          type="text"
+                          id="signup-username"
+                          placeholder="Username"
+                          required
+                          class="form-control my-2 mb-2"
+                        />
+                        <input
+                          type="password"
+                          id="signup-password"
+                          placeholder="Password"
+                          required
+                          class="form-control mt-2"
+                        />
+                        <input
+                          type="password"
+                          id="confirm-password"
+                          placeholder="Confirm Password"
+                          required
+                          class="form-control mt-2"
+                        />
+                        <label for="signup-dob">Security Question: Enter Date Of Birth</label>
+                        <input
+                          type="date"
+                          id="signup-dob"
+                          required
+                          class="form-control mt-2"
+                        />
+                        <button
+                          class="btn btn-primary mx-auto d-block px-5"
+                          type="submit"
+                        >
+                          Sign Up
+                        </button>
+                    </form>
+                    <p>
+                        Already have an account?
+                        <a href="./log.html" id="login-link">Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="loader" id="loader"></div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+    <script src="./particles.js"></script>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script>
+      document.getElementById("signup-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const loader = document.getElementById("loader");
+        const username = document.getElementById("signup-username").value;
+        const password = document.getElementById("signup-password").value;
+        const dateOfBirth = document.getElementById("signup-dob").value;
+        const confirmPassword = document.getElementById("confirm-password").value;
+
+        // Password validation
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+
+        if (!passwordRegex.test(password)) {
+          iziToast.error({
+            title: "Error",
+            message: "Password must be at least 6 characters long, contain an uppercase letter, a lowercase letter, and a number.",
+          });
+          return;
+        }
+          // Confirm password validation
+          if (password !== confirmPassword) {
+                      iziToast.error({
+                        title: "Error",
+                        message: "Passwords do not match.",
+                      });
+                      return;
+                    }
+        try {
+          loader.style.display = "block";
+          const response = await fetch("http://localhost:8806/signup", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: username,
+              password: password,
+              date_of_birth: dateOfBirth,
+            }),
+          });
+          const data = await response.json();
+          console.log(data);
+
+          if (data.isSign) {
+            iziToast.success({
+              title: "Signup successful",
+              message: "Sign Up Successfully",
+            });
+            setTimeout(function () {
+              window.location.href = "log.html";
+            }, 400);
+          } else {
+            iziToast.error({
+              title: "Error",
+              message: data.message,
+            });
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          iziToast.error({
+            title: "Error",
+            message: "An error occurred. Please try again later.",
+          });
+        } finally {
+          loader.style.display = "none";
+        }
+      });
+
+      // Check if user is already logged in
+      document.addEventListener("DOMContentLoaded", () => {
+        const isLoggedIn = checkLoginStatus(); // Implement this function based on your auth logic
+
+        if (isLoggedIn) {
+          window.location.href = "./index.html";
+        }
+      });
+
+      function checkLoginStatus() {
+        // Implement your logic to check if the user is logged in
+        // For example, check if a token exists in localStorage
+        return !!localStorage.getItem("isLoggedIn");
+      }
+    </script>
+</body>
+</html>
